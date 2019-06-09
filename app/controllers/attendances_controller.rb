@@ -1,5 +1,7 @@
 class AttendancesController < ApplicationController
   
+  before_action :correct_user,    only: [:edit, :update]
+  
   def create
     @user = User.find(params[:user_id])
     @attendance = @user.attendances.find_by(worked_on: Date.today)
@@ -24,6 +26,8 @@ class AttendancesController < ApplicationController
   
   def update
     @user = User.find(params[:id])
+    @dates = user_attendances_month_date
+    puts @dates
     if attendances_invalid?
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)

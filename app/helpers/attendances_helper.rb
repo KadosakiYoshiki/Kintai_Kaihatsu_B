@@ -9,6 +9,17 @@ module AttendancesHelper
     )
   end
   
+  def css_class(weekday)
+    case weekday
+      when 6
+        "week-saturday"
+      when 0
+        "week-sunday"
+      else
+        "week"
+    end
+  end
+  
   def working_times(started_at, finished_at)
     format("%.2f", (((finished_at - started_at) / 60) / 60.0))
   end
@@ -28,7 +39,7 @@ module AttendancesHelper
   def attendances_invalid?
     attendances = true
     attendances_params.each do |id, item|
-      if item[:started_at].blank? && item[:finished_at].blank?
+      if item[:started_at].blank? && item[:finished_at].blank? # 出社時間、退社時間どちらも入力されたときは出社時間が退社時間より未来日付になってないかを次項目で評価する
         next
       elsif item[:started_at].blank? || item[:finished_at].blank?
         attendances = false
@@ -36,7 +47,7 @@ module AttendancesHelper
       elsif item[:started_at] > item[:finished_at]
         attendances = false
         break
-      end 
+      end
     end
     return attendances
   end

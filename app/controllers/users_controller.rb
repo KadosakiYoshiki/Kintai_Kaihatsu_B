@@ -1,10 +1,10 @@
 class UsersController < ApplicationController
   before_action :logged_in_user,  only: [:edit, :update, :index, :destroy]
-  before_action :correct_user,    only: [:edit, :update]
+  before_action :correct_user,    only: [:edit, :update, :show]
   before_action :admin_user,      only: [:destroy, :edit_basic_info, :update_basic_info]
   
   def index
-    @users = User.paginate(page: params[:page])
+    @users = User.paginate(page: params[:page]).search(params[:search])
   end 
   
   def show
@@ -93,10 +93,16 @@ class UsersController < ApplicationController
     end
     
     # 正しいユーザーかどうか確認
+=begin
     def correct_user
       @user = User.find(params[:id])
-      redirect_to(root_url) unless current_user?(@user)
+      # 管理者ではないユーザが他ユーザ情報へアクセスしようとしているか確認
+      if !current_user.admin && !current_user?(@user)
+        flash[:danger] = "アクセス権限がありません"
+        redirect_to(user_path(@current_user))
+      end
     end
+=end
     
     # 管理者かどうか確認
     def admin_user
